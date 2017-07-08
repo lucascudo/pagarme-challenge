@@ -1,0 +1,26 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-2">
+      <!--Sidebar content-->
+
+      <p>
+        Search:
+        <input ng-model="$ctrl.query" />
+      </p>
+
+    </div>
+    <div class="col-md-10">
+      <!--Body content-->
+
+      <ul class="pokemons">
+        <li ng-repeat="pokemon in $ctrl.pokemons | filter:$ctrl.query"
+            class="pokemon-list-item">
+          <h2>{{pokemon.name}}</h2>
+          <p>Price: $ {{pokemon.price}}</p>
+          <p>Quantity in stock: {{pokemon.stock}}</p>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>
