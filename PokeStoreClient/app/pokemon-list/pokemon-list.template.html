@@ -12,12 +12,41 @@
     <div class="col-md-10">
       <!--Body content-->
 
+      <div ng-show="$ctrl.successMessage" class="alert alert-success">
+        {{ $ctrl.successMessage }}
+      </div>
+
+      <div ng-show="$ctrl.errorMessages && $ctrl.errorMessages.length" class="alert alert-danger">
+        <li ng-repeat="errorMessage in $ctrl.errorMessages">
+          {{ errorMessage }}
+        </li>
+      </div>
+
+      <form>
+          <input type="text" name="name" ng-model="newPokemon.name" placeholder="Name">
+          <input type="number" name="price" ng-model="newPokemon.price" placeholder="Price">
+          <input type="number" name="stock" ng-model="newPokemon.stock" placeholder="Quantity in stock">
+          <button ng-click="$ctrl.create(newPokemon)" class="btn btn-default">New pokemon</button>
+      </form>
+
+      <form>
+          <h3>Credit card data (needed for purchases only)</h3>
+          <input type="text" name="card_number" ng-model="card.number" placeholder="Number">
+          <input type="text" name="card_expiration_date" ng-model="card.expiration_date" placeholder="Expiration date">
+          <input type="text" name="card_holder_name" ng-model="card.holder_name" placeholder="Holder name">
+          <input type="number" name="card_cvv" ng-model="card.cvv" placeholder="CVV">
+      </form>
+      
       <ul class="pokemons">
-        <li ng-repeat="pokemon in $ctrl.pokemons | filter:$ctrl.query"
+        <li ng-repeat="pokemon in $ctrl.pokemons | filter:$ctrl.query | orderBy:'name'"
             class="pokemon-list-item">
           <h2>{{pokemon.name}}</h2>
           <p>Price: $ {{pokemon.price}}</p>
           <p>Quantity in stock: {{pokemon.stock}}</p>
+          <p ng-show="pokemon.stock > 0">
+            <input type="number" name="quantity" ng-model="pokemon.quantity" placeholder="Quantity">
+            <button ng-click="$ctrl.purchase(pokemon.id, pokemon.quantity, card)" class="btn btn-default">Purchase</button>
+          </p>
         </li>
       </ul>
 

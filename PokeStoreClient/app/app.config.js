@@ -12,4 +12,9 @@ angular.
         }).
         otherwise('/pokemons');
     }
-  ]);
+  ]).
+  run(['$rootScope', function($rootScope) {
+    $rootScope.ENV = {
+        apiUrl: '//192.168.2.108:3000'
+    };
+  }]);
