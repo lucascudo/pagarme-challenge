@@ -1,6 +1,6 @@
 {
-  "name": "PokeClientClient",
-  "description": "A AngularJS client for PokeClientAPI",
+  "name": "PokeStoreClient",
+  "description": "A AngularJS client for PokeStoreAPI",
   "version": "0.0.0",
   "license": "MIT",
   "private": true,

@@ -40,7 +40,7 @@ exports.apiPost = (req, res) => {
       }
 
       const reqFields = ['card_number', 'card_expiration_date',
-        'card_holder_name', 'card_holder_name'];
+        'card_holder_name', 'card_cvv'];
 
       //  Validating the presence of the required fields
       const invalidFields = [];

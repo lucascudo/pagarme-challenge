@@ -2,7 +2,7 @@
   "name": "PokeStoreClient",
   "private": true,
   "version": "0.0.0",
-  "description": "A AngularJS client for PokeClientAPI",
+  "description": "A AngularJS client for PokeStoreAPI",
   "license": "MIT",
   "dependencies": {
     "bower": "^1.7.7",
