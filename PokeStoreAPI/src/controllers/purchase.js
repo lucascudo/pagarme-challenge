@@ -2,6 +2,7 @@
 
 const DBConn = require('../config/database.js');
 const Pokemon = DBConn.models.pokemon;
+const Purchase = DBConn.models.purchase;
 const request = require('request-promise');
 
 /**
@@ -24,7 +25,6 @@ exports.apiPost = (req, res) => {
   Pokemon
     .findById(pkmnId)
     .then(pkmn => {
-      const newPkmn = pkmn;
       if (!pkmn) {
         return res.status(404).json({});
       }
@@ -59,13 +59,14 @@ exports.apiPost = (req, res) => {
           });
       }
       //  After the validatins we request a new transaction with our data
+      const amount = pkmn.price * quantity * 100;
       return request(
         {
           uri: 'https://api.pagar.me/1/transactions',
           method: 'POST',
           json: {
             api_key: process.env.PM_KEY,
-            amount: pkmn.price * quantity * 100, // Pagar.me payments are in cents
+            amount: amount, // Pagar.me payments are in cents
             card_number: req.body.card_number,
             card_expiration_date: req.body.card_expiration_date,
             card_holder_name: req.body.card_holder_name,
@@ -78,24 +79,36 @@ exports.apiPost = (req, res) => {
           },
         })
         .then(data => {
-          //  Check Pagar.me's response and treat it accordingly
-          if (data.status === 'paid') {
-            newPkmn.stock = pkmn.stock - quantity;
-            return newPkmn
-              .save()
-              .then(() => res.send(data)) // All is well, forward Pagarme's response
-              .catch(() => res.status(500).json({
-                error: 'The transaction was completed, but there was an error updating stock ',
-              })
-              );
-          }
+          // Store purchase data
+          const newPurchase = Purchase.build({
+            pokemon_id: pkmnId,
+            quantity: quantity,
+            amount: amount,
+            card_number: req.body.card_number,
+            card_expiration_date: req.body.card_expiration_date,
+            card_holder_name: req.body.card_holder_name,
+            card_cvv: req.body.card_cvv,
+            status: data.status
+          });
+          newPurchase.save().then((purchase) => {
+            // Check Pagar.me's response and treat it accordingly
+            if (data.status === 'paid') {
+              pkmn.stock = pkmn.stock - quantity;
+              return pkmn
+                .save()
+                .then(() => res.send(data)) // All is well, forward Pagarme's response
+                .catch(() => res.status(500).json({
+                  error: 'The transaction was completed, but there was an error updating stock ',
+                }));
+            }
 
-          let error = 'The payment gateway refused this purchase.';
-          if (data.refuse_reason) {
-            error = `The payment gateway refused this purchase: ${data.refuse_reason}`;
-          }
-          return res.status(500).json({
-            error,
+            let error = 'The payment gateway refused this purchase.';
+            if (data.refuse_reason) {
+              error = `The payment gateway refused this purchase: ${data.refuse_reason}`;
+            }
+            return res.status(500).json({
+              error,
+            });
           });
         })
         .catch(() =>
