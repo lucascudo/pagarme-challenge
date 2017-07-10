@@ -6,12 +6,16 @@ const pokemonController = require('../controllers/pokemon.js');
 const pokemonRouter = new express.Router();
 
 pokemonRouter
-  .route('/')
-  .get(pokemonController.apiGet)
-  .post(pokemonController.apiPost);
+	.route('/')
+	.get(pokemonController.apiGet)
+	.post(pokemonController.apiPost);
 
 pokemonRouter
-  .route('/:id(\\d+)/') //  Regex to accept only integers
-  .get(pokemonController.apiDetails);
+	.route('/:id(\\d+)/') //  Regex to accept only integers
+	.get(pokemonController.apiDetails);
+
+pokemonRouter
+	.route('/image')
+	.post(pokemonController.apiImage);
 
 module.exports = exports = pokemonRouter;

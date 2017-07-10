@@ -32,6 +32,10 @@ const Pokemon = (DB, Sequelize) =>
         min: 0,
       },
     },
+    image: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   });
 
 

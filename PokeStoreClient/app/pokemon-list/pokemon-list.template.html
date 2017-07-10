@@ -36,16 +36,24 @@
           <input type="text" name="card_holder_name" ng-model="card.holder_name" placeholder="Holder name">
           <input type="number" name="card_cvv" ng-model="card.cvv" placeholder="CVV">
       </form>
+
+      <br>
       
       <ul class="pokemons">
         <li ng-repeat="pokemon in $ctrl.pokemons | filter:$ctrl.query | orderBy:'name'"
-            class="pokemon-list-item">
+            class="thumbnail pokemon-list-item">
+          <img ng-src="{{ $ctrl.apiUrl + '/static/' + (pokemon.image || 'pokeball.jpg') }}" alt="{{ pokemon.name }}" class="thumb"/>
           <h2>{{pokemon.name}}</h2>
           <p>Price: $ {{pokemon.price}}</p>
           <p>Quantity in stock: {{pokemon.stock}}</p>
           <p ng-show="pokemon.stock > 0">
+            <button type="file" ngf-select="$ctrl.uploadImage($file, pokemon.id)" accept="image/*" ngf-max-height="192" ngf-max-width="192" ngf-max-size="1MB" class="btn btn-default">
+              Update Image
+            </button>
             <input type="number" name="quantity" ng-model="pokemon.quantity" placeholder="Quantity">
-            <button ng-click="$ctrl.purchase(pokemon.id, pokemon.quantity, card)" class="btn btn-default">Purchase</button>
+            <button ng-click="$ctrl.purchase(pokemon.id, pokemon.quantity, card)" class="btn btn-default">
+              Purchase
+            </button>
           </p>
         </li>
       </ul>

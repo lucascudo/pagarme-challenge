@@ -1,6 +1,7 @@
 'use strict';
 
 const DBConn = require('../config/database.js');
+const multer = require('multer');
 const Pokemon = DBConn.models.pokemon;
 
 /**
@@ -90,3 +91,54 @@ exports.apiDetails = (req, res) => {
       });
     });
 };
+
+/**
+ * POST Pokemon image to be uploaded and inserted in the database
+ * - `201 Create` if the picture was upload and the Pokemon record was updated successfully
+ * - `400 Bad Request` if the POST parameters didn't pass the validation
+ * - `500 Internal Server Error` if a problem prevented from performing the operation
+ *
+ * @param {Object} req
+ * @param {Object} res
+ */
+exports.apiImage = (req, res) => {
+  //define the type of upload multer would be doing and pass in its destination, in our case, its a single file with the name photo
+  const upload = multer({dest: __dirname + '/../uploads/'}).single('image');
+  upload(req, res, function (err) {
+    if (!req.body.id) {
+      return res.status(400).json({
+        error: 'Id was not provided.',
+      });
+    }
+    if (err) {
+      // An error occurred when uploading
+      console.log(err);
+      return res.status(400).json({
+        error: 'It was not possible to proccess the image.',
+      });
+    }
+    Pokemon
+      .findById(req.body.id)
+      .then((pokemon) => {
+        if (pokemon) {
+          pokemon.update({
+            image: req.file.path.split('/').pop(),
+          })
+          .then((pokemon) => {
+            res.status(201).json(pokemon);
+          });
+        }
+        else {
+          res.status(400).json({
+            error: 'Could not find Pokemon with id: ' + req.body.id + '.',
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: 'It was not possible to complete this request at this time.',
+        });
+      });
+  });
+}

@@ -2,7 +2,7 @@
 
 //  Package imports
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const logger = require('morgan');
@@ -19,6 +19,7 @@ const logStream = fs.createWriteStream(`${__dirname}/access.log`, { flags: 'a' }
 
 const server = express(); // Application setup
 server.use(cors()); // Middleware to enable CORS
+server.use('/static', express.static(__dirname + '/uploads')); // Serve static files
 server.use(bodyParser.json()); //  Middleware to accept JSON payloads only
 server.use(logger('combined', { stream: logStream }));
 
